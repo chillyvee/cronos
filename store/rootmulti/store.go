@@ -13,7 +13,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	pruningtypes "github.com/cosmos/cosmos-sdk/pruning/types"
 	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
 	"github.com/cosmos/cosmos-sdk/store/cachemulti"
 	"github.com/cosmos/cosmos-sdk/store/listenkv"
@@ -153,12 +152,12 @@ func (rs *Store) LastCommitID() types.CommitID {
 }
 
 // Implements interface Committer
-func (rs *Store) SetPruning(pruningtypes.PruningOptions) {
+func (rs *Store) SetPruning(types.PruningOptions) {
 }
 
 // Implements interface Committer
-func (rs *Store) GetPruning() pruningtypes.PruningOptions {
-	return pruningtypes.NewPruningOptions(pruningtypes.PruningDefault)
+func (rs *Store) GetPruning() types.PruningOptions {
+	return types.NewPruningOptions(362880, 100, 10)
 }
 
 // Implements interface Store
@@ -528,7 +527,7 @@ func (rs *Store) Query(req abci.RequestQuery) abci.ResponseQuery {
 		var err error
 		db, err = memiavl.Load(rs.dir, memiavl.Options{TargetVersion: uint32(version), ReadOnly: true})
 		if err != nil {
-			return sdkerrors.QueryResult(err, false)
+			return sdkerrors.QueryResult(err)
 		}
 		defer db.Close()
 	}
@@ -536,7 +535,7 @@ func (rs *Store) Query(req abci.RequestQuery) abci.ResponseQuery {
 	path := req.Path
 	storeName, subpath, err := parsePath(path)
 	if err != nil {
-		return sdkerrors.QueryResult(err, false)
+		return sdkerrors.QueryResult(err)
 	}
 
 	store := types.Queryable(memiavlstore.New(db.TreeByName(storeName), rs.logger))
@@ -550,7 +549,7 @@ func (rs *Store) Query(req abci.RequestQuery) abci.ResponseQuery {
 	}
 
 	if res.ProofOps == nil || len(res.ProofOps.Ops) == 0 {
-		return sdkerrors.QueryResult(errors.Wrap(sdkerrors.ErrInvalidRequest, "proof is unexpectedly empty; ensure height has not been pruned"), false)
+		return sdkerrors.QueryResult(errors.Wrap(sdkerrors.ErrInvalidRequest, "proof is unexpectedly empty; ensure height has not been pruned"))
 	}
 
 	commitInfo := db.LastCommitInfo()
