@@ -223,12 +223,14 @@ func (rs *Store) CacheMultiStoreWithVersion(version int64) (types.CacheMultiStor
 
 // Implements interface MultiStore
 func (rs *Store) GetStore(key types.StoreKey) types.Store {
-	panic("uncached KVStore is not supposed to be accessed directly")
+	return rs.GetCommitKVStore(key)
+	//panic("uncached KVStore is not supposed to be accessed directly")
 }
 
 // Implements interface MultiStore
 func (rs *Store) GetKVStore(key types.StoreKey) types.KVStore {
-	panic("uncached KVStore is not supposed to be accessed directly")
+	return rs.stores[key]
+	//panic("uncached KVStore is not supposed to be accessed directly")
 }
 
 // Implements interface MultiStore
