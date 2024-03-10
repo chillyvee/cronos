@@ -133,6 +133,7 @@ require (
 
 replace (
 	github.com/crypto-org-chain/cronos/memiavl => ../memiavl
+
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	// use cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.29
